@@ -1,6 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/services/api';
-import { useAuth } from '@/contexts/AuthContext';
 import {
   Clock,
   Flame,
@@ -17,23 +14,40 @@ import {
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 
+// Mock data for personal use - no backend required
+const mockDashboard = {
+  current_streak: 5,
+  longest_streak: 12,
+  todays_study_hours: 3.5,
+  amcat_countdown: 45,
+  semester_progress: {
+    progress_percentage: 35,
+    remaining_days: 78,
+    elapsed_days: 42,
+  },
+  today_schedule: {
+    study_blocks: [
+      { id: 1, subject: 'ADSA', topic: 'Dynamic Programming', start_time: '07:30', end_time: '08:30', duration_minutes: 60, completed: false },
+      { id: 2, subject: 'DBMS', topic: 'SQL Joins', start_time: '09:30', end_time: '10:30', duration_minutes: 60, completed: true },
+      { id: 3, subject: 'COA', topic: 'Cache Memory', start_time: '19:30', end_time: '21:00', duration_minutes: 90, completed: false },
+    ],
+  },
+  subject_progress: [
+    { subject: 'ADSA', completed: 12, total: 20, percentage: 60 },
+    { subject: 'DBMS', completed: 5, total: 8, percentage: 62.5 },
+    { subject: 'COA', completed: 4, total: 10, percentage: 40 },
+    { subject: 'Probability', completed: 3, total: 8, percentage: 37.5 },
+  ],
+  weekly_progress: {
+    total_minutes: 1260,
+    days_active: 5,
+    xp_earned: 450,
+  },
+};
+
 export default function DashboardPage() {
-  const { user } = useAuth();
-
-  const { data: dashboard, isLoading } = useQuery({
-    queryKey: ['dashboard'],
-    queryFn: () => api.getDashboard(),
-  });
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500" />
-      </div>
-    );
-  }
-
   const today = new Date();
+  const dashboard = mockDashboard;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -41,7 +55,7 @@ export default function DashboardPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">
-            Welcome back, {user?.full_name || user?.username}!
+            Welcome to S3OS!
           </h1>
           <p className="text-gray-400 mt-1">
             {format(today, 'EEEE, MMMM d, yyyy')}
@@ -50,11 +64,11 @@ export default function DashboardPage() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-lg">
             <Star className="w-5 h-5 text-yellow-400" />
-            <span className="text-white font-semibold">Level {user?.level || 1}</span>
+            <span className="text-white font-semibold">Level 3</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-lg">
             <Zap className="w-5 h-5 text-primary-400" />
-            <span className="text-white font-semibold">{user?.xp || 0} XP</span>
+            <span className="text-white font-semibold">1250 XP</span>
           </div>
         </div>
       </div>
@@ -64,25 +78,25 @@ export default function DashboardPage() {
         <StatCard
           icon={Flame}
           label="Current Streak"
-          value={`${dashboard?.current_streak || 0} days`}
+          value={`${dashboard.current_streak} days`}
           color="orange"
         />
         <StatCard
           icon={Trophy}
           label="Longest Streak"
-          value={`${dashboard?.longest_streak || 0} days`}
+          value={`${dashboard.longest_streak} days`}
           color="yellow"
         />
         <StatCard
           icon={Clock}
           label="Today's Study"
-          value={`${dashboard?.todays_study_hours?.toFixed(1) || 0}h`}
+          value={`${dashboard.todays_study_hours}h`}
           color="blue"
         />
         <StatCard
           icon={Target}
           label="AMCAT Countdown"
-          value={`${dashboard?.amcat_countdown || 0} days`}
+          value={`${dashboard.amcat_countdown} days`}
           color="purple"
         />
       </div>
@@ -104,9 +118,9 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {dashboard?.today_schedule?.study_blocks?.length ? (
+          {dashboard.today_schedule.study_blocks?.length ? (
             <div className="space-y-3">
-              {dashboard.today_schedule.study_blocks.map((block, index) => (
+              {dashboard.today_schedule.study_blocks.map((block: any, index: number) => (
                 <div
                   key={block.id || index}
                   className={`p-4 rounded-lg border ${
@@ -168,26 +182,26 @@ export default function DashboardPage() {
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-gray-400">Overall Progress</span>
                   <span className="text-white">
-                    {dashboard?.semester_progress?.progress_percentage?.toFixed(1) || 0}%
+                    {dashboard.semester_progress.progress_percentage.toFixed(1)}%
                   </span>
                 </div>
                 <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-primary-500 rounded-full transition-all duration-500"
-                    style={{ width: `${dashboard?.semester_progress?.progress_percentage || 0}%` }}
+                    style={{ width: `${dashboard.semester_progress.progress_percentage}%` }}
                   />
                 </div>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Days Remaining</span>
                 <span className="text-white">
-                  {dashboard?.semester_progress?.remaining_days || 0}
+                  {dashboard.semester_progress.remaining_days}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Days Elapsed</span>
                 <span className="text-white">
-                  {dashboard?.semester_progress?.elapsed_days || 0}
+                  {dashboard.semester_progress.elapsed_days}
                 </span>
               </div>
             </div>
@@ -200,7 +214,7 @@ export default function DashboardPage() {
               Subject Progress
             </h2>
             <div className="space-y-3">
-              {dashboard?.subject_progress?.slice(0, 5).map((subject) => (
+              {dashboard.subject_progress.slice(0, 5).map((subject) => (
                 <div key={subject.subject}>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-gray-300">{subject.subject}</span>
@@ -211,7 +225,7 @@ export default function DashboardPage() {
                   <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-green-500 rounded-full transition-all duration-500"
-                      style={{ width: `${subject.percentage || 0}%` }}
+                      style={{ width: `${subject.percentage}%` }}
                     />
                   </div>
                 </div>
@@ -258,19 +272,19 @@ export default function DashboardPage() {
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center p-4 bg-gray-700/30 rounded-lg">
             <p className="text-2xl font-bold text-primary-400">
-              {(dashboard?.weekly_progress?.total_minutes / 60)?.toFixed(1) || 0}h
+              {(dashboard.weekly_progress.total_minutes / 60).toFixed(1)}h
             </p>
             <p className="text-sm text-gray-400">Study Hours</p>
           </div>
           <div className="text-center p-4 bg-gray-700/30 rounded-lg">
             <p className="text-2xl font-bold text-green-400">
-              {dashboard?.weekly_progress?.days_active || 0}
+              {dashboard.weekly_progress.days_active}
             </p>
             <p className="text-sm text-gray-400">Days Active</p>
           </div>
           <div className="text-center p-4 bg-gray-700/30 rounded-lg">
             <p className="text-2xl font-bold text-yellow-400">
-              {dashboard?.weekly_progress?.xp_earned || 0}
+              {dashboard.weekly_progress.xp_earned}
             </p>
             <p className="text-sm text-gray-400">XP Earned</p>
           </div>

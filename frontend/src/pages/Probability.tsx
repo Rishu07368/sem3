@@ -1,5 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/services/api';
+import { useState } from 'react';
 import { Calculator, Check, Circle, TrendingUp, Target, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -8,15 +7,19 @@ const PROBABILITY_TOPICS = [
   'Probability Distributions', 'Mean, Variance, Std Dev', 'Sampling', 'Correlation and Regression'
 ];
 
-export default function ProbabilityPage() {
-  const queryClient = useQueryClient();
-  const { data: subject } = useQuery({ queryKey: ['subject', 'Probability'], queryFn: () => api.getSubject('Probability') });
-  const completeMutation = useMutation({
-    mutationFn: ({ topic, confidence }: { topic: string; confidence: number }) => api.completeTopic('Probability', topic, confidence),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['subject', 'Probability'] }); queryClient.invalidateQueries({ queryKey: ['dashboard'] }); },
-  });
+const initialCompleted = ['Probability Basics', 'Conditional Probability'];
 
-  const completedTopics = subject?.completed_topics || [];
+export default function ProbabilityPage() {
+  const [completedTopics, setCompletedTopics] = useState<string[]>(initialCompleted);
+
+  const toggleTopic = (topic: string) => {
+    setCompletedTopics(prev => 
+      prev.includes(topic) 
+        ? prev.filter(t => t !== topic)
+        : [...prev, topic]
+    );
+  };
+
   const progress = (completedTopics.length / PROBABILITY_TOPICS.length) * 100;
 
   return (
@@ -58,7 +61,7 @@ export default function ProbabilityPage() {
                     {isCompleted ? <div className="p-1 rounded-full bg-green-500"><Check className="w-4 h-4 text-white" /></div> : <Circle className="w-5 h-5 text-gray-500" />}
                     <span className={`font-medium ${isCompleted ? 'text-green-300' : 'text-white'}`}>{topic}</span>
                   </div>
-                  {!isCompleted && <button onClick={() => completeMutation.mutate({ topic, confidence: 0.7 })} className="btn btn-primary text-sm py-1 px-3" disabled={completeMutation.isPending}>Done</button>}
+                  {!isCompleted && <button onClick={() => toggleTopic(topic)} className="btn btn-primary text-sm py-1 px-3" >Done</button>}
                 </div>
               </div>
             );

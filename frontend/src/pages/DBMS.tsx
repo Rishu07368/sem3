@@ -1,6 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/services/api';
-import { Database, Check, Circle, TrendingUp, Target, Zap, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { Database, Check, Circle, TrendingUp, Target, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const DBMS_TOPICS = [
@@ -8,24 +7,19 @@ const DBMS_TOPICS = [
   'Indexes', 'ER Diagrams', 'Constraints', 'Practice Query Solving'
 ];
 
+const initialCompleted = ['SQL Queries', 'Joins', 'Normalization'];
+
 export default function DBMSPage() {
-  const queryClient = useQueryClient();
+  const [completedTopics, setCompletedTopics] = useState<string[]>(initialCompleted);
 
-  const { data: subject, isLoading } = useQuery({
-    queryKey: ['subject', 'DBMS'],
-    queryFn: () => api.getSubject('DBMS'),
-  });
+  const toggleTopic = (topic: string) => {
+    setCompletedTopics(prev => 
+      prev.includes(topic) 
+        ? prev.filter(t => t !== topic)
+        : [...prev, topic]
+    );
+  };
 
-  const completeMutation = useMutation({
-    mutationFn: ({ topic, confidence }: { topic: string; confidence: number }) =>
-      api.completeTopic('DBMS', topic, confidence),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subject', 'DBMS'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-    },
-  });
-
-  const completedTopics = subject?.completed_topics || [];
   const completedCount = completedTopics.length;
   const totalTopics = DBMS_TOPICS.length;
   const progress = (completedCount / totalTopics) * 100;
@@ -91,9 +85,9 @@ export default function DBMSPage() {
                   </div>
                   {!isCompleted && (
                     <button
-                      onClick={() => completeMutation.mutate({ topic, confidence: 0.7 })}
+                      onClick={() => toggleTopic(topic)}
                       className="btn btn-primary text-sm py-1 px-3"
-                      disabled={completeMutation.isPending}
+                      
                     >
                       Done
                     </button>

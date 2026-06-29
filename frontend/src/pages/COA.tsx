@@ -1,5 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/services/api';
+import { useState } from 'react';
 import { Cpu, Check, Circle, TrendingUp, Target, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -9,24 +8,19 @@ const COA_TOPICS = [
   'Interrupts', 'Input/Output Organization'
 ];
 
+const initialCompleted = ['Number Systems', 'Boolean Algebra'];
+
 export default function COAPage() {
-  const queryClient = useQueryClient();
+  const [completedTopics, setCompletedTopics] = useState<string[]>(initialCompleted);
 
-  const { data: subject } = useQuery({
-    queryKey: ['subject', 'COA'],
-    queryFn: () => api.getSubject('COA'),
-  });
+  const toggleTopic = (topic: string) => {
+    setCompletedTopics(prev => 
+      prev.includes(topic) 
+        ? prev.filter(t => t !== topic)
+        : [...prev, topic]
+    );
+  };
 
-  const completeMutation = useMutation({
-    mutationFn: ({ topic, confidence }: { topic: string; confidence: number }) =>
-      api.completeTopic('COA', topic, confidence),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subject', 'COA'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-    },
-  });
-
-  const completedTopics = subject?.completed_topics || [];
   const completedCount = completedTopics.length;
   const totalTopics = COA_TOPICS.length;
   const progress = (completedCount / totalTopics) * 100;
@@ -79,7 +73,7 @@ export default function COAPage() {
                     <span className={`font-medium ${isCompleted ? 'text-green-300' : 'text-white'}`}>{topic}</span>
                   </div>
                   {!isCompleted && (
-                    <button onClick={() => completeMutation.mutate({ topic, confidence: 0.7 })} className="btn btn-primary text-sm py-1 px-3" disabled={completeMutation.isPending}>Done</button>
+                    <button onClick={() => toggleTopic(topic)} className="btn btn-primary text-sm py-1 px-3" >Done</button>
                   )}
                 </div>
               </div>

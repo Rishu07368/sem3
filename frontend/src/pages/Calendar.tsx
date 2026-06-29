@@ -1,26 +1,23 @@
-import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { api } from '@/services/api';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Play } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
+
+// Mock heatmap data - intensity 0-4
+const mockHeatmap = [
+  { date: '2025-07-14', intensity: 2, minutes: 120 },
+  { date: '2025-07-15', intensity: 3, minutes: 180 },
+  { date: '2025-07-16', intensity: 1, minutes: 60 },
+  { date: '2025-07-17', intensity: 4, minutes: 240 },
+  { date: '2025-07-18', intensity: 2, minutes: 90 },
+  { date: '2025-07-19', intensity: 0, minutes: 0 },
+  { date: '2025-07-20', intensity: 3, minutes: 150 },
+  { date: '2025-07-21', intensity: 4, minutes: 200 },
+  { date: '2025-07-22', intensity: 2, minutes: 100 },
+  { date: '2025-07-23', intensity: 3, minutes: 160 },
+];
 
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const navigate = useNavigate();
-
-  const { data: schedules } = useQuery({
-    queryKey: ['schedules', format(currentDate, 'yyyy-MM')],
-    queryFn: () => api.getSchedules(
-      format(startOfMonth(currentDate), 'yyyy-MM-dd'),
-      format(endOfMonth(currentDate), 'yyyy-MM-dd')
-    ),
-  });
-
-  const { data: heatmapData } = useQuery({
-    queryKey: ['heatmap', currentDate.getFullYear(), currentDate.getMonth() + 1],
-    queryFn: () => api.getHeatmap(currentDate.getFullYear(), currentDate.getMonth() + 1),
-  });
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -29,16 +26,13 @@ export default function CalendarPage() {
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
   const heatmapMap = new Map(
-    heatmapData?.heatmap?.map((h: { date: string; intensity: number }) => [h.date, h.intensity]) || []
-  );
-
-  const scheduleMap = new Map(
-    schedules?.schedules?.map((s: { date: string; completion_percentage: number }) => [s.date, s]) || []
+    mockHeatmap.map((h) => [h.date, h])
   );
 
   const getDayColor = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
-    const intensity = heatmapMap.get(dateStr);
+    const dayData = heatmapMap.get(dateStr);
+    const intensity = dayData?.intensity || 0;
     
     if (isToday(date)) return 'bg-blue-500 ring-2 ring-blue-400';
     if (!isSameMonth(date, currentDate)) return 'bg-gray-800/50 text-gray-600';
@@ -52,9 +46,9 @@ export default function CalendarPage() {
     }
   };
 
-  const handleDayClick = (date: Date) => {
-    navigate(`/schedule/${format(date, 'yyyy-MM-dd')}`);
-  };
+  const activeDays = mockHeatmap.filter(h => h.intensity > 0).length;
+  const totalMinutes = mockHeatmap.reduce((acc, h) => acc + h.minutes, 0);
+  const consistency = Math.round((activeDays / 30) * 100);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -103,19 +97,18 @@ export default function CalendarPage() {
         <div className="grid grid-cols-7 gap-1">
           {days.map((day) => {
             const dateStr = format(day, 'yyyy-MM-dd');
-            const schedule = scheduleMap.get(dateStr);
+            const hasStudy = heatmapMap.has(dateStr);
             
             return (
-              <button
+              <div
                 key={dateStr}
-                onClick={() => handleDayClick(day)}
-                className={`aspect-square rounded-lg flex flex-col items-center justify-center ${getDayColor(day)} transition-all hover:scale-105 cursor-pointer`}
+                className={`aspect-square rounded-lg flex flex-col items-center justify-center ${getDayColor(day)} transition-all`}
               >
                 <span className="text-sm font-medium">{format(day, 'd')}</span>
-                {schedule && (
+                {hasStudy && (
                   <div className="w-1.5 h-1.5 rounded-full bg-white/50 mt-0.5" />
                 )}
-              </button>
+              </div>
             );
           })}
         </div>
@@ -149,28 +142,19 @@ export default function CalendarPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card p-4">
           <p className="text-sm text-gray-400">Active Days</p>
-          <p className="text-2xl font-bold text-green-400">
-            {heatmapData?.heatmap?.filter((h: { intensity: number }) => h.intensity > 0).length || 0}
-          </p>
+          <p className="text-2xl font-bold text-green-400">{activeDays}</p>
         </div>
         <div className="card p-4">
           <p className="text-sm text-gray-400">Total Hours</p>
-          <p className="text-2xl font-bold text-blue-400">
-            {((heatmapData?.heatmap?.reduce((acc: number, h: { minutes: number }) => acc + h.minutes, 0) || 0) / 60).toFixed(1)}
-          </p>
+          <p className="text-2xl font-bold text-blue-400">{(totalMinutes / 60).toFixed(1)}</p>
         </div>
         <div className="card p-4">
           <p className="text-sm text-gray-400">Best Day</p>
-          <p className="text-2xl font-bold text-yellow-400">
-            {heatmapData?.heatmap?.reduce((best: { minutes: number }, h: { minutes: number }) => 
-              h.minutes > best.minutes ? h : best, { minutes: 0 })?.date?.split('-')[2] || '-'}
-          </p>
+          <p className="text-2xl font-bold text-yellow-400">17</p>
         </div>
         <div className="card p-4">
           <p className="text-sm text-gray-400">Consistency</p>
-          <p className="text-2xl font-bold text-purple-400">
-            {((heatmapData?.heatmap?.filter((h: { intensity: number }) => h.intensity > 0).length / days.length) * 100).toFixed(0)}%
-          </p>
+          <p className="text-2xl font-bold text-purple-400">{consistency}%</p>
         </div>
       </div>
     </div>

@@ -1,38 +1,29 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/services/api';
 import { BarChart3, TrendingUp, Clock, Trophy, Flame, Star, Calendar, BookOpen } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
 
 const COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
 
+// Mock data
+const subjectData = [
+  { name: 'ADSA', completed: 12, total: 20, hours: 45 },
+  { name: 'DBMS', completed: 5, total: 8, hours: 25 },
+  { name: 'COA', completed: 4, total: 10, hours: 20 },
+  { name: 'Probability', completed: 3, total: 8, hours: 15 },
+  { name: 'Python', completed: 4, total: 6, hours: 8 },
+];
+
+const weeklyData = [
+  { day: 'Mon', hours: 4.5 },
+  { day: 'Tue', hours: 3.2 },
+  { day: 'Wed', hours: 5.0 },
+  { day: 'Thu', hours: 2.8 },
+  { day: 'Fri', hours: 4.0 },
+  { day: 'Sat', hours: 6.5 },
+  { day: 'Sun', hours: 3.0 },
+];
+
 export default function AnalyticsPage() {
-  const { data: semester, isLoading } = useQuery({
-    queryKey: ['semester-analytics'],
-    queryFn: () => api.getSemesterAnalytics(),
-  });
-
-  const { data: weekly } = useQuery({
-    queryKey: ['weekly-analytics', format(new Date(), 'yyyy-MM-dd')],
-    queryFn: () => api.getWeeklyAnalytics(format(new Date(), 'yyyy-MM-dd')),
-  });
-
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500" /></div>;
-  }
-
-  const subjectData = Object.entries(semester?.subject_completion || {}).map(([name, data]: [string, any]) => ({
-    name,
-    completed: data.completed,
-    total: data.total,
-    hours: data.study_hours,
-  }));
-
-  const weeklyData = weekly?.daily_breakdown?.map((d: { date: string; minutes: number }) => ({
-    day: format(new Date(d.date), 'EEE'),
-    hours: (d.minutes / 60).toFixed(1),
-  })) || [];
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -49,10 +40,10 @@ export default function AnalyticsPage() {
 
       {/* Overview Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard icon={Clock} label="Total Hours" value={`${semester?.total_study_hours?.toFixed(1) || 0}h`} color="blue" />
-        <StatCard icon={Trophy} label="Tasks Done" value={`${semester?.tasks_completed || 0}`} color="green" />
-        <StatCard icon={Flame} label="Current Streak" value={`${semester?.current_streak || 0} days`} color="orange" />
-        <StatCard icon={Star} label="Total XP" value={`${semester?.total_xp || 0}`} color="yellow" />
+        <StatCard icon={Clock} label="Total Hours" value={`${"113.0"}h`} color="blue" />
+        <StatCard icon={Trophy} label="Tasks Done" value={`${85}`} color="green" />
+        <StatCard icon={Flame} label="Current Streak" value={`${5} days`} color="orange" />
+        <StatCard icon={Star} label="Total XP" value={`${1250}`} color="yellow" />
       </div>
 
       {/* Charts */}

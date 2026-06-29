@@ -1,6 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/services/api';
-import { BookOpen, Check, Circle, TrendingUp, Clock, Target, Zap } from 'lucide-react';
+import { useState } from 'react';
+import { BookOpen, Check, Circle, TrendingUp, Target, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const ADSA_TOPICS = [
@@ -11,24 +10,20 @@ const ADSA_TOPICS = [
   'Dynamic Programming Advanced'
 ];
 
+// Mock completed topics
+const initialCompleted = ['Arrays', 'Strings', 'Recursion', 'Searching', 'Sorting', 'Linked Lists', 'Stacks', 'Queues', 'Trees'];
+
 export default function ADSAPage() {
-  const queryClient = useQueryClient();
+  const [completedTopics, setCompletedTopics] = useState<string[]>(initialCompleted);
 
-  const { data: subject, isLoading } = useQuery({
-    queryKey: ['subject', 'ADSA'],
-    queryFn: () => api.getSubject('ADSA'),
-  });
+  const toggleTopic = (topic: string) => {
+    setCompletedTopics(prev => 
+      prev.includes(topic) 
+        ? prev.filter(t => t !== topic)
+        : [...prev, topic]
+    );
+  };
 
-  const completeMutation = useMutation({
-    mutationFn: ({ topic, confidence }: { topic: string; confidence: number }) =>
-      api.completeTopic('ADSA', topic, confidence),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subject', 'ADSA'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-    },
-  });
-
-  const completedTopics = subject?.completed_topics || [];
   const completedCount = completedTopics.length;
   const totalTopics = ADSA_TOPICS.length;
   const progress = (completedCount / totalTopics) * 100;
@@ -106,18 +101,22 @@ export default function ADSAPage() {
                       <p className={`font-medium ${isCompleted ? 'text-green-300' : 'text-white'}`}>
                         {topic}
                       </p>
-                      {isCompleted && (
-                        <p className="text-xs text-green-400 mt-1">Completed</p>
-                      )}
                     </div>
                   </div>
                   {!isCompleted && (
                     <button
-                      onClick={() => completeMutation.mutate({ topic, confidence: 0.7 })}
+                      onClick={() => toggleTopic(topic)}
                       className="btn btn-primary text-sm py-1 px-3"
-                      disabled={completeMutation.isPending}
                     >
                       Mark Done
+                    </button>
+                  )}
+                  {isCompleted && (
+                    <button
+                      onClick={() => toggleTopic(topic)}
+                      className="btn btn-secondary text-sm py-1 px-3"
+                    >
+                      Undo
                     </button>
                   )}
                 </div>
@@ -128,7 +127,7 @@ export default function ADSAPage() {
       </div>
 
       {/* Weak Topics */}
-      {subject?.weak_topics?.length > 0 && (
+      {false && (
         <div className="card p-6 border-orange-600">
           <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-orange-400" />

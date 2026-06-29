@@ -1,5 +1,4 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 import {
   LayoutDashboard,
   Calendar,
@@ -10,7 +9,6 @@ import {
   Briefcase,
   BarChart3,
   Settings,
-  LogOut,
   Flame,
   Star,
   Menu,
@@ -31,7 +29,6 @@ const navigation = [
 ];
 
 export default function Layout() {
-  const { user, logout } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -100,25 +97,19 @@ export default function Layout() {
           <div className="p-4 border-t border-gray-700">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-semibold">
-                {user?.username?.[0]?.toUpperCase() || 'U'}
+                S3
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">
-                  {user?.full_name || user?.username}
+                  Semester 3
                 </p>
                 <div className="flex items-center gap-2 text-xs text-gray-400">
                   <Star className="w-3 h-3" />
-                  <span>Level {user?.level || 1}</span>
+                  <span>BE Computer</span>
                   <Flame className="w-3 h-3 text-orange-500" />
-                  <span>{user?.current_streak || 0}</span>
+                  <span>CU</span>
                 </div>
               </div>
-              <button
-                onClick={logout}
-                className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-700"
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
             </div>
           </div>
         </div>
