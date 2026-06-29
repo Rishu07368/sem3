@@ -1,169 +1,192 @@
-# Daily Timetable Engine
+# S3OS - Academic Operating System
 
-An intelligent study planning and tracking application for BE Computer Science students at Chandigarh University.
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18-blue" alt="React">
+  <img src="https://img.shields.io/badge/FastAPI-Python-green" alt="FastAPI">
+  <img src="https://img.shields.io/badge/TypeScript-5.3-blue" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Database-PostgreSQL-blue" alt="PostgreSQL">
+</p>
+
+**S3OS** is an intelligent study planning and tracking application designed specifically for Computer Science students. It combines automated scheduling, spaced repetition, analytics, and gamification to help students maximize their learning outcomes.
 
 ## Features
 
-### Core Features
-- **Intelligent Scheduling Engine**: Automatically generates daily timetables based on configurable constraints
-- **120-Day Coverage**: Complete schedule from July 14 to November 10, 2025
-- **Fixed Daily Activities**: Sleep, breakfast, college, gym, dinner - all configurable
-- **Dynamic Study Blocks**: Morning revision, evening study, night deep-work sessions
+### 🎯 Intelligent Scheduling Engine
+- **Dynamic Timetable Generation**: Automatically generates schedules for 120 days (July 14 - November 10)
+- **Subject Priority System**: ADSA → COA → DBMS → Probability → Python → UHV → Soft Skills
+- **Multiple Study Modes**: Normal, AMCAT (Aug 15 - Sep 15), and Exam modes
+- **Adaptive Scheduling**: Considers missed tasks, upcoming exams, and confidence levels
 
-### Subject Priorities
-1. ADSA (12-15 hrs/week) - Highest placement priority
-2. COA (8-10 hrs/week) - Concept-heavy core CS
-3. DBMS (8-10 hrs/week) - SQL and database fundamentals
-4. Probability (6-8 hrs/week) - Engineering mathematics
-5. Python (2-3 hrs/week) - Revision only
-6. UHV (1 hr/week) - Theory subject
-7. Soft Skills (1 hr/week) - Communication & personality
+### 📊 Analytics & Insights
+- **Study Heatmaps**: GitHub-style activity visualization
+- **Weekly/Monthly/Semester Reports**: Comprehensive progress tracking
+- **Subject Distribution**: Time allocation across subjects
+- **AMCAT Readiness Assessment**: Track your placement preparation
+- **Burn-down Charts**: Visualize syllabus completion
 
-### Study Modes
-- **Normal Mode**: Standard semester schedule
-- **AMCAT Mode** (Aug 15 - Sep 15): Increased aptitude study time
-- **Exam Mode** (3 weeks before exams): Revision-focused
+### 🔄 Spaced Repetition System
+- **SM-2 Algorithm**: Optimized revision scheduling
+- **Automatic Intervals**: 1, 3, 7, 14, 30, 60, 90 days
+- **Confidence Tracking**: Identify weak topics
+- **Smart Rescheduling**: Never miss a revision
 
-### Interactive Features
-- **Daily Page**: Timeline, tasks, progress bars, pomodoro timer
-- **Calendar View**: Color-coded days (green/yellow/red/blue/grey)
-- **Smart Rescheduling**: Missed tasks automatically moved to future slots
-- **Analytics Dashboard**: Daily, weekly, monthly, semester reports
-- **Mood & Energy Tracking**: Daily check-ins for self-awareness
+### 🏆 Gamification
+- **XP System**: Earn experience points for every activity
+- **Level Progression**: Level up as you study consistently
+- **Achievements**: Unlock badges for milestones
+- **Daily/Weekly Missions**: Stay motivated with goals
+- **Streak Tracking**: Build consistent study habits
 
-### Technical Highlights
-- **Scheduling Engine**: Reusable, extensible, maintainable
-- **Configuration-Driven**: Change constraints, regenerate entire timetable
-- **SQLite Database**: Persistent storage for schedules, progress, analytics
-- **REST API**: Full backend for mobile apps and integrations
+### 📅 Calendar Integration
+- **120-Day Calendar View**: Color-coded study intensity
+- **Day-by-Day Schedules**: Click any date to view your plan
+- **Quick Navigation**: Jump between weeks and months
 
-## Architecture
+### 📚 Subject Modules
+Dedicated pages for each subject with:
+- Topic checklists with completion tracking
+- Difficulty and importance ratings
+- Weak topic identification
+- Study hours tracking
+- Revision count
 
-```
-/workspace/project
-├── backend/
-│   ├── app.py                 # Flask application factory
-│   ├── models/
-│   │   └── database.py        # SQLAlchemy models
-│   ├── routes/
-│   │   └── api.py             # REST API endpoints
-│   └── services/
-│       ├── scheduling_engine.py  # Core scheduling logic
-│       └── subjects.py        # Subject definitions
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx            # Main application
-│   │   ├── pages/
-│   │   │   ├── DailyPage.jsx     # Daily timetable view
-│   │   │   ├── CalendarPage.jsx  # Calendar view
-│   │   │   ├── AnalyticsPage.jsx # Analytics dashboard
-│   │   │   └── SettingsPage.jsx  # Configuration
-│   │   └── context/
-│   │       └── AppContext.jsx    # React context
-│   └── build/                 # Production build
-└── README.md
-```
+### 🍅 Pomodoro Timer
+- **Built-in Focus Timer**: Stay productive
+- **XP Rewards**: Bonus points for completed sessions
+- **Session History**: Track your focus patterns
 
-## Running the Application
+## Tech Stack
 
-### Start Backend
+### Frontend
+- **React 18** with TypeScript
+- **Vite** for fast development
+- **TailwindCSS** for styling
+- **React Query** for server state
+- **React Router** for navigation
+- **Recharts** for analytics visualizations
+- **Framer Motion** for animations
+
+### Backend
+- **FastAPI** - High-performance async framework
+- **SQLAlchemy 2.0** - Type-safe ORM
+- **JWT Authentication** - Secure auth
+- **Pydantic** - Data validation
+- **Alembic** - Database migrations
+
+### Database
+- **SQLite** (Development)
+- **PostgreSQL** (Production)
+
+## Quick Start
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- npm or yarn
+
+### Backend Setup
+
 ```bash
-cd /workspace/project/backend
+cd backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
-python app.py
+
+# Run the server
+uvicorn app:app --reload --port 5000
 ```
 
-### Start Frontend (Development)
+### Frontend Setup
+
 ```bash
-cd /workspace/project/frontend
+cd frontend
+
+# Install dependencies
 npm install
+
+# Run development server
 npm run dev
 ```
 
-### Production Build
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:5000
+- API Documentation: http://localhost:5000/docs
+
+### Using Docker
+
 ```bash
-cd /workspace/project/frontend
-npm run build
+# Build and run all services
+docker-compose up --build
+
+# Stop services
+docker-compose down
 ```
 
-Then access at `http://localhost:5000`
+## Project Structure
 
-## API Endpoints
-
-### Timetable Generation
-- `POST /api/generate` - Generate complete timetable
-- `GET /api/schedule/<date>` - Get schedule for specific date
-- `GET /api/schedules?start=&end=` - Get schedules in range
-- `POST /api/regenerate` - Regenerate with new constraints
-
-### Study Blocks
-- `GET /api/blocks/<id>` - Get study block details
-- `POST /api/blocks/<id>/complete` - Mark block as completed
-- `POST /api/blocks/<id>/miss` - Mark block as missed
-- `POST /api/blocks/<id>/reschedule` - Reschedule to new date
-
-### Pomodoro Timer
-- `POST /api/pomodoro/start/<block_id>` - Start pomodoro
-- `POST /api/pomodoro/pause/<session_id>` - Pause session
-- `POST /api/pomodoro/resume/<session_id>` - Resume session
-- `POST /api/pomodoro/finish/<session_id>` - Finish session
-- `POST /api/pomodoro/interrupt/<session_id>` - Interrupt session
-
-### Analytics
-- `GET /api/analytics/daily/<date>` - Daily analytics
-- `GET /api/analytics/weekly/<start_date>` - Weekly analytics
-- `GET /api/analytics/monthly/<year>/<month>` - Monthly analytics
-- `GET /api/analytics/semester` - Semester analytics
-- `GET /api/analytics/streaks` - Streak information
-
-### Configuration
-- `GET /api/config` - Get all configuration
-- `GET /api/config/<key>` - Get specific value
-- `PUT /api/config/<key>` - Update value
-
-### Calendar
-- `GET /api/calendar?year=&month=` - Get calendar data for month
-
-## Configuration Options
-
-The scheduling engine is fully configurable:
-
-```python
-SchedulingConstraints(
-    start_date=datetime(2025, 7, 14),
-    end_date=datetime(2025, 11, 10),
-    
-    # Fixed activities (all configurable)
-    sleep_start="23:30",
-    sleep_end="07:00",
-    college_start="09:30",
-    college_end="16:30",
-    gym_start="17:30",
-    gym_end="19:00",
-    
-    # Mode dates
-    amcat_start_date=datetime(2025, 8, 15),
-    amcat_end_date=datetime(2025, 9, 15),
-    exam_start_date=datetime(2025, 11, 1),
-    
-    # Study time allocation
-    total_available_study_hours=30.0,
-)
+```
+semester3/
+├── backend/
+│   ├── app.py              # FastAPI application
+│   ├── config.py           # Configuration
+│   ├── models/             # SQLAlchemy models
+│   ├── routes/             # API endpoints
+│   ├── services/           # Business logic
+│   │   ├── scheduling_engine.py   # Timetable generation
+│   │   ├── revision_engine.py     # Spaced repetition
+│   │   ├── analytics_engine.py    # Reports & insights
+│   │   └── gamification.py        # XP & achievements
+│   └── utils/              # Security utilities
+├── frontend/
+│   ├── src/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── pages/          # Route pages
+│   │   ├── services/       # API client
+│   │   ├── contexts/       # React contexts
+│   │   └── types/         # TypeScript definitions
+│   └── ...
+├── database/
+│   └── schema.sql          # Database schema
+├── docs/
+│   ├── API.md              # API documentation
+│   └── Architecture.md      # System design
+├── docker-compose.yml      # Docker configuration
+└── README.md
 ```
 
-## Subject Syllabi
+## Subject Priorities
 
-### ADSA (Highest Priority)
-Arrays, Strings, Recursion, Searching, Sorting, Linked Lists, Stacks, Queues, Trees, BST, AVL Trees, Heaps, Hashing, Graphs (BFS/DFS/Shortest Paths), Greedy, Backtracking, Dynamic Programming
+| Subject | Priority | Difficulty | Placement Importance | Weekly Hours |
+|---------|----------|------------|---------------------|--------------|
+| ADSA | 1 | 9.5/10 | 10/10 | 12-15 |
+| COA | 2 | 8.5/10 | 8/10 | 8-10 |
+| DBMS | 3 | 7.5/10 | 9/10 | 8-10 |
+| Probability | 4 | 7/10 | 6/10 | 6-8 |
+| Python | 5 | 3/10 | 6/10 | 2-3 |
+| UHV | 6 | 2/10 | 1/10 | 1 |
+| Soft Skills | 7 | 2/10 | 2/10 | 1 |
 
-### COA
-Number Systems, Boolean Algebra, CPU Organization, Registers, Instruction Cycle, Memory Hierarchy, Cache Memory, Pipelining, Interrupts, I/O Organization
+## API Documentation
 
-### DBMS
-SQL Queries, Joins, Normalization, Transactions, Indexes, ER Diagrams, Constraints, Practice Query Solving
+Full API documentation is available at `/docs` when the backend is running.
 
-### Probability & Statistics
-Probability Basics, Conditional Probability, Bayes Theorem, Random Variables, Probability Distributions, Mean/Variance/StdDev, Sampling, Correlation and Regression
+### Key Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/v1/auth/register | Register new user |
+| POST | /api/v1/auth/login | Login and get token |
+| GET | /api/v1/dashboard/ | Get dashboard overview |
+| POST | /api/v1/timetable/generate | Generate full timetable |
+| GET | /api/v1/subjects/ | Get all subjects |
+| POST | /api/v1/subjects/{name}/topic/{topic}/complete | Mark topic done |
+| GET | /api/v1/analytics/semester | Get semester analytics |
+| GET | /api/v1/amcat/ | Get AMCAT overview |
 
 ## License
 

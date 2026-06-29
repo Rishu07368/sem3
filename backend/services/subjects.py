@@ -2,10 +2,11 @@
 Subject Configuration Module
 Defines all subjects with their syllabus breakdowns, priorities, and importance.
 """
+from typing import List
 from .scheduling_engine import Subject
 
 
-def get_default_subjects() -> list[Subject]:
+def get_default_subjects() -> List[Subject]:
     """Get the default set of subjects for a BE Computer Science student."""
     return [
         Subject(
@@ -142,7 +143,7 @@ def get_default_subjects() -> list[Subject]:
     ]
 
 
-def get_amcat_subjects() -> list[Subject]:
+def get_amcat_subjects() -> List[Subject]:
     """Get AMCAT-specific subjects."""
     return [
         Subject(
